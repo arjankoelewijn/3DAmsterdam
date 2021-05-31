@@ -152,6 +152,7 @@ namespace Netherlands3D.ObjectInteraction
 			if (!Selector.Instance.HoveringInterface() && stickToMouse && action.Performed)
 			{
 				Debug.Log("Placed Transformable");
+				HelpMessage.Instance.Hide(true);
 
 				blockMouseSelectionInteractions = false;
 				blockKeyboardNavigationInteractions = false;

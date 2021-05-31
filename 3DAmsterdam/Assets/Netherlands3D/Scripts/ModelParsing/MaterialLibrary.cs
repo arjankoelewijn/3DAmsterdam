@@ -52,16 +52,20 @@ namespace Netherlands3D.ModelParsing
             PropertiesPanel.Instance.AddTextfield("Er zijn <b>" + matchedMaterialNames.Length + " materialen*</b> gevonden die overeenkomen met die uit de bibliotheek. Wil je deze overnemen?");
             PropertiesPanel.Instance.AddActionButtonBig("Ja, neem over", (action) =>
             {
-                ApplyMaterialOverrides(renderer);
                 PropertiesPanel.Instance.ClearGeneratedFields();
-                PropertiesPanel.Instance.OpenCustomObjects();
-                UpdateBounds();
+                if (renderer)
+                {
+                    ApplyMaterialOverrides(renderer);
+                }
+                PropertiesPanel.Instance.OpenCustomObjects(renderer.GetComponent<Transformable>());
             });
             PropertiesPanel.Instance.AddActionButtonBig("Nee", (action) =>
             {
                 PropertiesPanel.Instance.ClearGeneratedFields();
-                PropertiesPanel.Instance.OpenCustomObjects(renderer.GetComponent<Transformable>());
-                UpdateBounds();
+                if (renderer)
+                {
+                    PropertiesPanel.Instance.OpenCustomObjects(renderer.GetComponent<Transformable>());
+                }
             });
 
             PropertiesPanel.Instance.AddLabel("<i>*Het gaat om de volgende materialen:</i>");
@@ -70,23 +74,6 @@ namespace Netherlands3D.ModelParsing
                 PropertiesPanel.Instance.AddTextfield($"<i>- {materialName}</i>");
             }
             
-        }
-        /// <summary>
-		/// Method allowing the triggers for when this object bounds were changed so the thumbnail will be rerendered.
-		/// </summary>
-		public void UpdateBounds()
-        {
-            int objectOriginalLayer = this.gameObject.layer;
-            this.gameObject.layer = PropertiesPanel.Instance.ThumbnailExclusiveLayer;
-
-            //Render transformable using the bounds of all the nested renderers (allowing for complexer models with subrenderers)
-            Bounds bounds = new Bounds(gameObject.transform.position, Vector3.zero);
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-            PropertiesPanel.Instance.RenderThumbnailContaining(bounds);
-            this.gameObject.layer = objectOriginalLayer;
         }
         private List<string> FoundMatch(MeshRenderer renderer)
         {
